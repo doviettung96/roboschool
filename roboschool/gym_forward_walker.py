@@ -87,6 +87,8 @@ class RoboschoolForwardWalker(SharedMemoryClientEnv):
     joints_at_limit_cost = -0.2    # discourage stuck joints
 
     def step(self, a):
+        self.reach_target = False # add this one to check if the target is reach
+
         if not self.scene.multiplayer:  # if multiplayer, action first applied to all robots, then global step() called, then step() for all robots with the same actions
             self.apply_action(a)
             self.scene.global_step()
@@ -130,7 +132,7 @@ class RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)
         self.HUD(state, a, done)
-        return state, sum(self.rewards), bool(done), {}
+        return state, sum(self.rewards), bool(done), {'reach_target': self.reach_target}
 
     def episode_over(self, frames):
         pass

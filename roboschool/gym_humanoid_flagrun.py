@@ -33,6 +33,7 @@ class RoboschoolHumanoidFlagrun(RoboschoolHumanoid):
     def calc_state(self):
         self.flag_timeout -= 1
         state = RoboschoolHumanoid.calc_state(self)
+        self.reach_target = self.walk_target_dist < 1 # add this to verify that the target is reached
         if self.walk_target_dist < 1 or self.flag_timeout <= 0:
             self.flag_reposition(first=False)
             state = RoboschoolHumanoid.calc_state(self)  # caclulate state again, against new flag pos
