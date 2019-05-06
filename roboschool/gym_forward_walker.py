@@ -55,7 +55,7 @@ class RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.body_rpy = body_pose.rpy()
         z = self.body_xyz[2]
         r, p, yaw = self.body_rpy
-        if self.initial_z==None:
+        if self.initial_z is None:
             self.initial_z = z
         self.walk_target_theta = np.arctan2( self.walk_target_y - self.body_xyz[1], self.walk_target_x - self.body_xyz[0] )
         self.walk_target_dist  = np.linalg.norm( [self.walk_target_y - self.body_xyz[1], self.walk_target_x - self.body_xyz[0]] )
@@ -87,6 +87,8 @@ class RoboschoolForwardWalker(SharedMemoryClientEnv):
     joints_at_limit_cost = -0.2    # discourage stuck joints
 
     def step(self, a):
+        self.reach_target = False # add this one to check if the target is reach
+
         if not self.scene.multiplayer:  # if multiplayer, action first applied to all robots, then global step() called, then step() for all robots with the same actions
             self.apply_action(a)
             self.scene.global_step()
@@ -130,7 +132,7 @@ class RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)
         self.HUD(state, a, done)
-        return state, sum(self.rewards), bool(done), {}
+        return state, sum(self.rewards), bool(done), {'reach_target': self.reach_target}
 
     def episode_over(self, frames):
         pass
